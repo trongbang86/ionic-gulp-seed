@@ -23,9 +23,17 @@ module.exports = function(gulp, plugins){
 	 */
 	function getProtractorBinary(binaryName){
 	    var pkgPath = require.resolve('protractor');
-	    console.log(pkgPath);
 	    var protractorDir = path.resolve(path.join(path.dirname(pkgPath), '..', 'bin'));
 	    return path.join(protractorDir, '/'+binaryName);
+	}
+
+	/*
+	 * This gets appium binary files under node_modules/appium
+	 */
+	function getAppiumBinary(binaryName){
+		var pkgPath = require.resolve('appium');
+		var appiumDir = path.resolve(path.join(path.dirname(pkgPath), '..', '..', 'bin'));
+		return path.join(appiumDir, '/' + binaryName);
 	}
 
 	gulp.task('test-e2e', ['default'], function(){
@@ -61,5 +69,10 @@ module.exports = function(gulp, plugins){
 	        }, 5000);
 	      });
 	  });
+	});
+
+	gulp.task('test-android', function(){
+		var appiumServer = getAppiumBinary('appium.js');
+		var appiumProcess = spawn('node', [appiumServer], {stdio: 'inherit'});
 	});
 };
