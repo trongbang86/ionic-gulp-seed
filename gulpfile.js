@@ -18,13 +18,6 @@ var runSequence = require('run-sequence');
 var merge = require('merge-stream');
 var ripple = require('ripple-emulator');
 var cache = require('gulp-cached');
-var KarmaServer = require('karma').Server;
-var spawn = require('child_process').spawn;
-var Promise = require('bluebird');
-
-// this is the express server which 
-// will be initiated when gulp serve
-var server = null;
 
 /**
  * Parse arguments
@@ -256,7 +249,8 @@ gulp.task('index', ['jsHint', 'scripts'], function() {
 
 // start local express server
 gulp.task('serve', function() {
-  server = express()
+  //keep a hold of the server so we can stop it later
+  gulp.__server__ = express()
     .use(!build ? connectLr() : function(){})
     .use(express.static(targetDir))
     .listen(port);
@@ -324,59 +318,6 @@ gulp.task('watchers', function() {
 // no-op = empty function
 gulp.task('noop', function() {});
 
-//testing
-gulp.task('test-unit', function(done){
-  new KarmaServer({
-    configFile: __dirname + '/karma.conf.js',
-    singleRun: true
-  }, done).start();
-});
-
-/*
- * This gets the path to protractor folder under node_modules
- */
-function getProtractorBinary(binaryName){
-    var pkgPath = require.resolve('protractor');
-    var protractorDir = path.resolve(path.join(path.dirname(pkgPath), '..', 'bin'));
-    return path.join(protractorDir, '/'+binaryName);
-}
-
-gulp.task('test-e2e', ['default'], function(){
-  var protractor = plugins.protractor.protractor;
-
-  return new Promise(function(resolve, reject){
-    /**
-     * Steps:
-     * 1. webdriver-manager update: to make sure the standalone 
-     *      selenium driver is downloaded to be used
-     * 2. webdriver-manager start: to start selenium driver
-     * 3. run protractor test cases
-     */
-    var webdriverBinary = getProtractorBinary('webdriver-manager');
-
-    var webdriverUpdate = spawn('node', [webdriverBinary, 'update'], {stdio: 'inherit'})
-      .once('close', function(){
-        var webdriverProcess = spawn('node', 
-                        [webdriverBinary, 'start'], 
-                        {stdio: 'inherit'});
-     
-        setTimeout(function(){
-
-          var stream = gulp.src('test/e2e/**/*.spec.js').
-                  pipe(protractor({
-                    configFile: './protractor.conf.js'
-                  })).on('end', function(){
-                    webdriverProcess.kill();
-                    webdriverUpdate.kill();
-                    server.close();
-                  });
-          resolve(stream);
-        }, 5000);
-      });
-  });
-});
-
-
 // our main sequence, with some conditional jobs depending on params
 gulp.task('default', function(done) {
   runSequence(
@@ -396,3 +337,6 @@ gulp.task('default', function(done) {
     run ? 'ionic:run' : 'noop',
     done);
 });
+
+// Importing test tasks into gulp
+require('./gulp/test.js')(gulp, plugins);
