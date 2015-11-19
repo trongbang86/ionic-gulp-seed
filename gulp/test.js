@@ -1,7 +1,8 @@
 var path 		= require('path'),
  	KarmaServer = require('karma').Server,
  	spawn 		= require('child_process').spawn,
- 	Promise 	= require('bluebird');
+ 	Promise 	= require('bluebird'),
+ 	adbClient	= require('adbkit').createClient();
 
 /**
  * Gulp tasks for test
@@ -74,5 +75,15 @@ module.exports = function(gulp, plugins){
 	gulp.task('test-android', function(){
 		var appiumServer = getAppiumBinary('appium.js');
 		var appiumProcess = spawn('node', [appiumServer], {stdio: 'inherit'});
+
+		// wait after 4s to make sure appium server is up and running
+		// then check which android devices are being connected
+		setTimeout(function(){
+
+			adbClient.listDevices().then(function(devices){
+				console.log(devices);
+			});
+
+		}, 5000);
 	});
 };
