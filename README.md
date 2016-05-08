@@ -14,6 +14,7 @@ Heads-up: There is now also a [Yeoman Generator](https://github.com/tmaximini/ge
 * generate icon font from svg files
 * Blazing fast
 * E2E(End-to-End) testing with Protractor
+* Able to override ionic style variables
 
 ## Commands
 
@@ -61,6 +62,8 @@ All 3rd party Javascript sources have to be manually added into `.vendor.json` a
 I know there is [wiredep](https://github.com/taptapship/wiredep) but I prefer to explicitly control which files get injected and also wiredep ends up adding lots of `<script>` tags in your index.html instead of building a single `vendor.js` file.
 
 All test cases are located under `test` folder. E2E testing specs are inside `test/e2e` folder. Unit Testing with [Karma] runner is in `test/unit` folder. They both use [MochaJS] as the main framework.
+
+You can override variables defined by Ionic frameworks by placing them in `app/styles/_variables.scss`. As you can see, `ionic.scss` is imported at the end in `app/styles/main.scss`. Therefore placing your variables anywhere before that makes the Ionic variables overrided. However, it's a recommended approach to keep them all in `app/styles/_variables.scss` to make the application leaner. 
 
 ## Workflow
 

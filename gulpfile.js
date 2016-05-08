@@ -79,23 +79,13 @@ gulp.task('styles', function() {
   var options = build ? { style: 'compressed' } : { style: 'expanded' };
 
   var sassStream = gulp.src('app/styles/main.scss')
-    .pipe(plugins.sass(options))
     .on('error', function(err) {
       console.log('err: ', err);
       beep();
     });
 
-
-  var ionicStream = gulp.src('bower_components/ionic/scss/ionic.scss')
-    .pipe(cache('styles'))
+  return sassStream
     .pipe(plugins.sass(options))
-    .pipe(plugins.remember('styles'))
-    .on('error', function(err) {
-        console.log('err: ', err);
-        beep();
-      });
-
-  return streamqueue({ objectMode: true }, ionicStream, sassStream)
     .pipe(plugins.autoprefixer('last 1 Chrome version', 'last 3 iOS versions', 'last 3 Android versions'))
     .pipe(plugins.concat('main.css'))
     .pipe(plugins.if(build, plugins.stripCssComments()))
