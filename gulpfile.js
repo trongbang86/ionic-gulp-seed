@@ -38,6 +38,7 @@ var args = require('yargs')
     .default('build', false)
     .default('port', 9000)
     .default('strip-debug', false)
+    .default('env', 'development')
     .argv;
 
 var build = !!(args.build || args.emulate || args.run);
@@ -122,7 +123,12 @@ gulp.task('scripts', function() {
 
     .pipe(plugins.if(!build, plugins.changed(dest)));
 
+  var envFile = './environments/' + args.env +'.json';
+
+  var envConfig = require(envFile);
+
   return streamqueue({ objectMode: true }, scriptStream, templateStream)
+    .pipe(plugins.tokenReplace({tokens: envConfig}))
     .pipe(plugins.if(build, plugins.ngAnnotate()))
     .pipe(plugins.if(stripDebug, plugins.stripDebug()))
     .pipe(plugins.if(build, plugins.concat('app.js')))
@@ -322,6 +328,7 @@ gulp.task('test-unit', function(done){
   }, function(exitStatus){
     done(exitStatus ? "There are failing unit tests" : undefined);
   }).start();
+      
 });
 
 /*

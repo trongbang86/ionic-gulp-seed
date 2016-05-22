@@ -12,10 +12,9 @@
 
 angular.module('IonicGulpSeed')
 
-    // development
     .constant('API_ENDPOINT', {
-        host: 'http://localhost',
-        port: 3000,
+        host: "{{api.host}}",
+        port: "{{api.port}}",
         path: '',
         needsAuth: false
     });

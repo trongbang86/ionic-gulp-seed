@@ -15,12 +15,14 @@ Heads-up: There is now also a [Yeoman Generator](https://github.com/tmaximini/ge
 * Blazing fast
 * E2E(End-to-End) testing with Protractor
 * Able to override ionic style variables
+* Configurable for different environments
 
 ## Commands
 
 | gulp command                | shortcut             | what it does                                                                                   |
 |-----------------------------|----------------------|------------------------------------------------------------------------------------------------|
-| `gulp`                      | —                    | run local development server, start watchers, auto reload browser on change, targetfolder /tmp |
+| `gulp`                      | —                    | run local development server, start watchers, auto reload browser on change, targetfolder /tmp. The default environment is `development`. |
+| `gulp --env=production`     | —                    | The same as running `gulp` but it loads production-specific environment settings which are set in the corresponding file `environments/production.json`. |
 | `gulp --build`              | `gulp -b`            | create a build from current `/app` folder, minify assets, targetfolder `/www`                  |
 | `gulp --emulate <platform>` | `gulp -e <platform>` | run a build first, then ionic emulate <platform>. defaults to ios                              |
 | `gulp --run <platform>`     | `gulp -r <platform>` | run a build first, then ionic run <platform>. defaults to ios                                  |
@@ -76,6 +78,7 @@ Secondly, you need to have cordova and ionic cli installed (`npm install -g cord
 
 By running just `gulp`, we start our development build process, consisting of:
 
+- overriding environment-specific variables in your javascript files with the one given in `environments/your_env.json` file
 - compiling, concatenating, auto-prefixing of all `.scss` files required by `app/styles/main.scss`
 - creating `vendor.js` file from external sources defined in `./vendor.json`
 - linting all `*.js` files `app/scripts`, see `.jshintrc` for ruleset
@@ -87,8 +90,8 @@ By running just `gulp`, we start our development build process, consisting of:
 
 #### Build mode
 
-By running just `gulp --build` or short `gulp -b`, we start gulp in build mode
-
+By running just `gulp --build` or short `gulp -b`, we start gulp in build mode. Without declaring which environment explicitly, `environments/development.json` will be used. Otherwise, specify the environment by executing `gulp -b --env=your_env` command.
+- override {{anyPlaceHolders}} in your javascript files with the settings given in `environments/your_env.json` file
 - concat all `.js` sources into single `app.js` file
 - version `main.css` and `app.js`
 - build everything into `www` folder
@@ -136,6 +139,8 @@ There is also a [blog post with more detailed information about this gulp workfl
 Unit Testing is done using [Karma] runner. The main configuration file is `karma.conf.js` under root folder. You can change the frameworks to be used by changing the `frameworks` key in `karma.conf.js` file. Currently [MochaJS], [Chai]\(BDD testing style) and [Sinon] are being used.
 
 All the html files `app/templates/**/*.html` are converted to angular module `AppTemplate` using [html2js](https://github.com/karma-runner/karma-ng-html2js-preprocessor) when you run `gulp test-unit`. Hence, you need to write `beforeEach(module('AppTemplate'))` in your test files so that angular will not give you a GET error when looking for the template files.
+
+Next since you might have different environment settings such as port number and endpoint url for services. You can mock these values in `test/unit/global.js`. The file is to define global variables and functions which are used across all test files.
 
 ### E2E testing
 [Protractor] is used in this project to run E2E testing. `protractor.conf.js` is the main configuration file. If you change the port for the running server, you will need to change the baseUrl in the `protractor.conf.js` file. To make it generic, [MochaJS] is also used as the main framework. You need to suffix your files with 'spec.js'. It's actually only a convention and I'm trying to follow that.

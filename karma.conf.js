@@ -19,6 +19,7 @@ function filesArray(){
 
     var appJsFiles = [
       'app/scripts/**/*.js',
+      'test/unit/global.js',
       'test/unit/**/*.js'
     ];
 
