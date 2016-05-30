@@ -63,7 +63,10 @@ module.exports = function(config) {
     // settings for coverage plugin
     coverageReporter: {
         type: 'html',
-        dir: 'coverage/'
+        dir: 'coverage/',
+        instrumenterOptions: {
+            istanbul: { noCompact: true }
+        }
     },
 
     // test results reporter to use
