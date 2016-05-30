@@ -15,7 +15,7 @@
  *
  */
 angular.module('IonicGulpSeed')
-    .factory('ApiService', function($window, $http, API_ENDPOINT) {
+    .factory('ApiService', function($window, $http, API_ENDPOINT, $log) {
 
         var _api = API_ENDPOINT;
         var endpoint = _api.port ? (_api.host + ':' + _api.port + _api.path) : (_api.host + _api.path);
@@ -27,8 +27,18 @@ angular.module('IonicGulpSeed')
 
         // public api
         return {
-            getEndpoint: function() { return endpoint; }
+            getEndpoint: getEndpoint,
+            url: url
         };
+
+        function getEndpoint() { 
+            return endpoint; 
+        }
+        function url(url) {
+            $log.debug('Calling ApiService.url() ' + 
+                'with endpont:' + endpoint);
+            return endpoint + url;
+        }
 
     });
 

@@ -3,10 +3,10 @@ describe('ApiService', function() {
 
 	beforeEach(module('IonicGulpSeed'));
 	beforeEach(module('AppTemplate'));
+	mockApiService();
 
 	beforeEach(inject(function(ApiService){
 		service = ApiService;
-		mockApiService(service);
 	}));
 
 	it('should getEndpoint()', function() {
