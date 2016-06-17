@@ -16,6 +16,7 @@ Heads-up: There is now also a [Yeoman Generator](https://github.com/tmaximini/ge
 * E2E(End-to-End) testing with Protractor
 * Able to override ionic style variables
 * Configurable for different environments
+* Font Awesome
 
 ## Commands
 
