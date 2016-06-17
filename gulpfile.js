@@ -310,7 +310,9 @@ gulp.task('watchers', function() {
   gulp.watch('app/images/**', ['images']);
   gulp.watch('app/scripts/**/*.js', ['index']);
   gulp.watch('./vendor.json', ['vendor']);
-  gulp.watch('app/templates/**/*.html', ['index']);
+  gulp.watch('app/templates/**/*.html', function(){
+    runSequence('templates', 'index');
+  });
   gulp.watch('app/index.html', ['index']);
   gulp.watch(targetDir + '/**')
     .on('change', plugins.livereload.changed)
