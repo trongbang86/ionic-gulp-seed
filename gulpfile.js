@@ -118,17 +118,18 @@ gulp.task('scripts', function() {
       htmlmin: build && minifyConfig
     }));
 
-  var scriptStream = gulp
-    .src(['templates.js', 'app.js', '**/*.js'], { cwd: 'app/scripts' })
-
-    .pipe(plugins.if(!build, plugins.changed(dest)));
 
   var envFile = './environments/' + args.env +'.json';
 
   var envConfig = require(envFile);
 
-  return streamqueue({ objectMode: true }, scriptStream, templateStream)
+  var scriptStream = gulp
+    .src(['templates.js', 'app.js', '**/*.js'], { cwd: 'app/scripts' })
     .pipe(plugins.tokenReplace({tokens: envConfig}))
+    .pipe(plugins.if(!build, plugins.changed(dest)));
+
+
+  return streamqueue({ objectMode: true }, scriptStream, templateStream)
     .pipe(plugins.if(build, plugins.ngAnnotate()))
     .pipe(plugins.if(stripDebug, plugins.stripDebug()))
     .pipe(plugins.if(build, plugins.concat('app.js')))
