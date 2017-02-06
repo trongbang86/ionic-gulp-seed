@@ -130,6 +130,7 @@ gulp.task('scripts', function() {
 
 
   return streamqueue({ objectMode: true }, scriptStream, templateStream)
+    .pipe(plugins.iife())
     .pipe(plugins.if(build, plugins.ngAnnotate()))
     .pipe(plugins.if(stripDebug, plugins.stripDebug()))
     .pipe(plugins.if(build, plugins.concat('app.js')))
