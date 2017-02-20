@@ -68,6 +68,8 @@ All test cases are located under `test` folder. E2E testing specs are inside `te
 
 You can override variables defined by Ionic frameworks by placing them in `app/styles/_variables.scss`. As you can see, `ionic.scss` is imported at the end in `app/styles/main.scss`. Therefore placing your variables anywhere before that makes the Ionic variables overrided. However, it's a recommended approach to keep them all in `app/styles/_variables.scss` to make the application leaner. 
 
+There is a conflict between `gulp tokenReplace` and `Angular Interpolation`. Please change [your Angular app's delimiter symbols](https://docs.angularjs.org/api/ng/provider/$interpolateProvider) before starting your development.
+
 ## Workflow
 
 This doc assumes you have `gulp` globally installed (`npm install -g gulp`).
