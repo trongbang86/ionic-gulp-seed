@@ -19,7 +19,6 @@ Heads-up: There is now also a [Yeoman Generator](https://github.com/tmaximini/ge
 * Font Awesome
 
 ## Commands
-
 | gulp command                | shortcut             | what it does                                                                                   |
 |-----------------------------|----------------------|------------------------------------------------------------------------------------------------|
 | `gulp`                      | —                    | run local development server, start watchers, auto reload browser on change, targetfolder /tmp. The default environment is `development`. |
@@ -29,6 +28,9 @@ Heads-up: There is now also a [Yeoman Generator](https://github.com/tmaximini/ge
 | `gulp --run <platform>`     | `gulp -r <platform>` | run a build first, then ionic run <platform>. defaults to ios                                  |
 | `gulp test-unit`            | none                 | run all the test cases under `test/unit` folder using Karma runner                             |
 | `gulp test-e2e`             | none                 | run all the test cases under `test/e2e` folder using Protractor                                |
+| `gulp test-e2e-with-servers`             | none                 | run all the test cases under `test/e2e` folder after booting up Express and Selenium servers                                |
+| `gulp test-e2e-with-express`             | none                 | run all the test cases under `test/e2e` folder after booting up Express server only                               |
+
 
 ## Installation
 
