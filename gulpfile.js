@@ -346,8 +346,11 @@ function getProtractorBinary(binaryName){
     return path.join(protractorDir, '/'+binaryName);
 }
 
-gulp.task('test-e2e', ['default'], function(){
-  var protractor = plugins.protractor.protractor;
+/**
+ * This runs E2E testing after booting up
+ * protractor and express servers
+ */
+gulp.task('test-e2e-with-servers', ['default'], function(){
 
   return new Promise(function(resolve, reject){
     /**
@@ -367,10 +370,7 @@ gulp.task('test-e2e', ['default'], function(){
      
         setTimeout(function(){
 
-          var stream = gulp.src('test/e2e/**/*.spec.js').
-                  pipe(protractor({
-                    configFile: './protractor.conf.js'
-                  })).on('end', function(){
+          var stream = getStreamE2E().on('end', function(){
                     webdriverProcess.kill();
                     webdriverUpdate.kill();
                     server.close();
@@ -380,6 +380,40 @@ gulp.task('test-e2e', ['default'], function(){
       });
   });
 });
+
+/**
+ * This runs E2E testing after booting up
+ * Express server
+ */
+gulp.task('test-e2e-with-express', ['default'], function(){
+    return getStreamE2E();
+
+});
+
+/**
+ * This only runs the test without booting 
+ * Express and Protractor servers
+ */
+gulp.task('test-e2e', function(){
+    return getStreamE2E();
+
+});
+
+/**
+ * This returns the main gulp stream to run 
+ * protractor test.
+ * This is used by other gulp tasks such as
+ * 'test-e2e', 'test-e2e-with-servers'
+ */
+function getStreamE2E() {
+    var protractor = plugins.protractor.protractor;
+    return gulp.src('test/e2e/**/*.spec.js').
+              pipe(plugins.tokenReplace({tokens: getEnvConfig()})).
+              pipe(gulp.dest(path.join(targetDir, 'test', 'e2e'))).
+              pipe(protractor({
+                configFile: './protractor.conf.js'
+              }));
+}
 
 
 // our main sequence, with some conditional jobs depending on params
@@ -401,3 +435,51 @@ gulp.task('default', function(done) {
     run ? 'ionic:run' : 'noop',
     done);
 });
+
+gulp.task('assets_resized', function() {
+    runSequence('assets_resized_extra_small',
+                'assets_resized_small',
+                'assets_resized_medium',
+                'assets_resized_large');
+});
+
+/**
+ * This defines all the jobs for resizing assets
+ * Key: Job name
+ * Value: the maximum width
+ * The end result will be gulp tasks in this format: assets_resized_{{key}}
+ */
+var assets_jobs = {
+    'extra_small': 200,
+    'small': 250,
+    'medium': 600,
+    'large': 700
+};
+
+_.each(assets_jobs, function(value, key){
+    (function(){
+        gulp.task('assets_resized_'+key, function(){
+            return gulp.src('app/assets/resized/**/*.{png,jpg}')
+                    .pipe(plugins.responsive({
+                        '*.*': {
+                            width: value
+                        }
+                    }))
+                    .pipe(gulp.dest(path.join(targetDir, 'assets/resized/'+key)));
+        });
+    })();
+});
+
+/**
+ * This loads the settings from ./environments/{{env}}.json
+ * Also it overrides the IP address while under development mode
+ */
+function getEnvConfig() {
+    var envFile = './environments/' + args.env +'.json';
+
+    var envConfig = require(envFile);
+
+    return envConfig;
+
+}
+
