@@ -22,6 +22,7 @@ var KarmaServer = require('karma').Server;
 var spawn = require('child_process').spawn;
 var Promise = require('bluebird');
 var _ = require('lodash');
+var fs = require('fs');
 
 // this is the express server which 
 // will be initiated when gulp serve
@@ -476,11 +477,19 @@ _.each(assets_jobs, function(value, key){
  * Also it overrides the IP address while under development mode
  */
 function getEnvConfig() {
-    var envFile = './environments/' + args.env +'.json';
+    var envFolder = './environments';
+    var defaultConfigFile = envFolder + '/default.json';
+    var envConfigFile = envFolder + '/' + args.env +'.json';
+    var defaultConfig = {}; // This is the content of the default config file
+    var envConfig = require(envConfigFile); // This is the content 
+                            // of the specific env config file
 
-    var envConfig = require(envFile);
+    if(fs.existsSync(defaultConfigFile)){
+        defaultConfig = require(defaultConfigFile);
+    }
 
-    return envConfig;
+
+    return _.extend({}, defaultConfig, envConfig);
 
 }
 
