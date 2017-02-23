@@ -21,6 +21,7 @@ var cache = require('gulp-cached');
 var KarmaServer = require('karma').Server;
 var spawn = require('child_process').spawn;
 var Promise = require('bluebird');
+var _ = require('lodash');
 
 // this is the express server which 
 // will be initiated when gulp serve
