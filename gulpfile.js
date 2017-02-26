@@ -41,6 +41,7 @@ var args = require('yargs')
     .default('port', 9000)
     .default('strip-debug', false)
     .default('env', 'development')
+    .default('debug', false)
     .argv;
 
 var build = !!(args.build || args.emulate || args.run);
@@ -49,6 +50,7 @@ var run = args.run;
 var port = args.port;
 var stripDebug = !!args.stripDebug;
 var targetDir = path.resolve(build ? 'www' : '.tmp');
+var debug = args.debug;
 
 // if we just use emualate or run without specifying platform, we assume iOS
 // in this case the value returned from yargs would just be true
@@ -330,12 +332,16 @@ gulp.task('noop', function() {});
 
 //testing
 gulp.task('test-unit', function(done){
-  new KarmaServer({
-    configFile: __dirname + '/karma.conf.js',
-    singleRun: true
-  }, function(exitStatus){
-    done(exitStatus ? "There are failing unit tests" : undefined);
-  }).start();
+    var singleRun = true;
+    if(args.debug) {
+        singleRun = false;
+    }
+    new KarmaServer({
+        configFile: __dirname + '/karma.conf.js',
+        singleRun: singleRun
+    }, function(exitStatus){
+        done(exitStatus ? "There are failing unit tests" : undefined);
+    }).start();
       
 });
 
