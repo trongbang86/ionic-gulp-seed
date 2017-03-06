@@ -25,7 +25,7 @@ Heads-up: There is now also a [Yeoman Generator](https://github.com/tmaximini/ge
 | `gulp --env=production`     | —                    | The same as running `gulp` but it loads production-specific environment settings which are set in the corresponding file `environments/production.json`. |
 | `gulp --build`              | `gulp -b`            | create a build from current `/app` folder, minify assets, targetfolder `/www`                  |
 | `gulp --emulate <platform>` | `gulp -e <platform>` | run a build first, then ionic emulate <platform>. defaults to ios                              |
-| `gulp --run <platform>`     | `gulp -r <platform>` | run a build first, then ionic run <platform>. defaults to ios                                  |
+| `gulp --run <platform> [--source]`     | `gulp [-s] -r <platform>` | run a build first, then ionic run <platform>. defaults to ios. The flag -s is to keep source code intact for debugging purposes                                  |
 | `gulp test-unit`            | none                 | run all the test cases under `test/unit` folder using Karma runner. If you want to enable debugging, just add `--debug`                             |
 | `gulp test-e2e`             | none                 | run all the test cases under `test/e2e` folder using Protractor                                |
 | `gulp test-e2e-with-servers`             | none                 | run all the test cases under `test/e2e` folder after booting up Express and Selenium servers                                |

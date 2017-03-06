@@ -34,11 +34,13 @@ var server = null;
 var args = require('yargs')
     .alias('e', 'emulate')
     .alias('b', 'build')
+    .alias('s', 'source')
     .alias('r', 'run')
     // remove all debug messages (console.logs, alerts etc) from release build
     .alias('release', 'strip-debug')
     .default('build', false)
     .default('port', 9000)
+    .default('source', false)
     .default('strip-debug', false)
     .default('env', 'development')
     .default('debug', false)
@@ -51,6 +53,7 @@ var port = args.port;
 var stripDebug = !!args.stripDebug;
 var targetDir = path.resolve(build ? 'www' : '.tmp');
 var debug = args.debug;
+var keepSource = args.source;
 
 // if we just use emualate or run without specifying platform, we assume iOS
 // in this case the value returned from yargs would just be true
@@ -93,7 +96,7 @@ gulp.task('styles', function() {
     .pipe(plugins.sass(options))
     .pipe(plugins.autoprefixer('last 1 Chrome version', 'last 3 iOS versions', 'last 3 Android versions'))
     .pipe(plugins.concat('main.css'))
-    .pipe(plugins.if(build, plugins.stripCssComments()))
+    .pipe(plugins.if(build && !keepSource, plugins.stripCssComments()))
     .pipe(plugins.if(build && !emulate, plugins.rev()))
     .pipe(gulp.dest(path.join(targetDir, 'styles')))
     .on('error', errorHandler);
@@ -119,7 +122,7 @@ gulp.task('scripts', function() {
     .pipe(plugins.angularTemplatecache('templates.js', {
       root: 'templates/',
       module: appName,
-      htmlmin: build && minifyConfig
+      htmlmin: build && !keepSource && minifyConfig
     }));
 
 
@@ -135,10 +138,10 @@ gulp.task('scripts', function() {
 
   return streamqueue({ objectMode: true }, scriptStream, templateStream)
     .pipe(plugins.iife())
-    .pipe(plugins.if(build, plugins.ngAnnotate()))
+    .pipe(plugins.if(build && !keepSource, plugins.ngAnnotate()))
     .pipe(plugins.if(stripDebug, plugins.stripDebug()))
-    .pipe(plugins.if(build, plugins.concat('app.js')))
-    .pipe(plugins.if(build, plugins.uglify()))
+    .pipe(plugins.if(build && !keepSource, plugins.concat('app.js')))
+    .pipe(plugins.if(build && !keepSource, plugins.uglify()))
     .pipe(plugins.if(build && !emulate, plugins.rev()))
 
     .pipe(gulp.dest(dest))
@@ -211,7 +214,7 @@ gulp.task('vendor', function() {
 
   return gulp.src(vendorFiles)
     .pipe(plugins.concat('vendor.js'))
-    .pipe(plugins.if(build, plugins.uglify()))
+    .pipe(plugins.if(build && !keepSource, plugins.uglify()))
     .pipe(plugins.if(build, plugins.rev()))
 
     .pipe(gulp.dest(targetDir))
@@ -239,7 +242,7 @@ gulp.task('index', ['jsHint', 'scripts'], function() {
   // in development mode, it's better to add each file seperately.
   // it makes debugging easier.
   var _getAllScriptSources = function() {
-    var scriptStream = gulp.src(['scripts/app.js', 'scripts/**/*.js'], { cwd: targetDir });
+    var scriptStream = gulp.src(['scripts/app*.js', 'scripts/**/*.js'], { cwd: targetDir });
     return streamqueue({ objectMode: true }, scriptStream);
   };
 
@@ -249,7 +252,7 @@ gulp.task('index', ['jsHint', 'scripts'], function() {
     // inject vendor.js
     .pipe(_inject(gulp.src('vendor*.js', { cwd: targetDir }), 'vendor'))
     // inject app.js (build) or all js files indivually (dev)
-    .pipe(plugins.if(build,
+    .pipe(plugins.if(build && !keepSource,
       _inject(gulp.src('scripts/app*.js', { cwd: targetDir }), 'app'),
       _inject(_getAllScriptSources(), 'app')
     ))
