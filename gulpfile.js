@@ -23,6 +23,7 @@ var spawn = require('child_process').spawn;
 var Promise = require('bluebird');
 var _ = require('lodash');
 var fs = require('fs');
+var map = require('map-stream');
 
 // this is the express server which 
 // will be initiated when gulp serve
@@ -203,10 +204,45 @@ gulp.task('jsHint', function(done) {
     .src('app/scripts/**/*.js')
     .pipe(plugins.jshint())
     .pipe(plugins.jshint.reporter(stylish))
+    .pipe(jshintFileReporter('./.jshint-errors.log'))
 
     .on('error', errorHandler);
     done();
 });
+
+/**
+ * This writes jshint errors to a file
+ * Ref: https://github.com/spenceralger/gulp-jshint#custom-reporters
+ */
+var jshintFileReporter = function (filename) {
+  var stream;
+  var writeFailures = function (path, errors) {
+    var out = [];
+    out.push(errors.length + ' lint errors found in ' + path);
+    errors.forEach(function (error) {
+        var err = error.error;
+        out.push(
+                '  [' + err.line + ',' + err.character + '](' + err.code + ') ' +
+                err.reason
+                );
+    });
+
+    out.push('\n\n');
+
+    if(!stream) {
+        stream = fs.createWriteStream(filename);
+    }
+
+    stream.write(out.join('\n'));
+  };
+
+  return map(function (file, cb) {
+    if (file.jshint && file.jshint.success === false) {
+      writeFailures(file.path, file.jshint.results.filter(Boolean));
+    }
+    return cb(null, file);
+  });
+};
 
 // concatenate and minify vendor sources
 gulp.task('vendor', function() {

@@ -50,6 +50,7 @@
     "karma-ng-html2js-preprocessor": "^0.2.0",
     "karma-sinon": "^1.0.4",
     "lodash": "^3.0.0",
+    "map-stream": "0.0.6",
     "merge-stream": "^0.1.7",
     "mocha": "^2.3.3",
     "open": "0.0.5",
