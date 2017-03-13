@@ -4,6 +4,7 @@
 
 var _ = require('lodash');
 
+var args = require('./utils.js').getArguments();
 
 /**
  * This function returns a list of js/html files 
@@ -28,6 +29,16 @@ function filesArray(){
     return _.union(vendorJsFiles, mockJsFiles, appJsFiles, htmlFiles);
 }
 
+function get_coverage_files() {
+    if (args.source) {
+        return '';
+    } else {
+        return 'app/scripts/**/*.js';
+    }
+}
+
+coverage_files = get_coverage_files();
+
 module.exports = function(config) {
   config.set({
 
@@ -50,7 +61,7 @@ module.exports = function(config) {
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
     preprocessors: {
-        'app/scripts/**/*.js': ['coverage'],
+        coverage_files: ['coverage'],
         'app/templates/**/*.html': ['ng-html2js']
     },
 

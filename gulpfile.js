@@ -32,20 +32,7 @@ var server = null;
 /**
  * Parse arguments
  */
-var args = require('yargs')
-    .alias('e', 'emulate')
-    .alias('b', 'build')
-    .alias('s', 'source')
-    .alias('r', 'run')
-    // remove all debug messages (console.logs, alerts etc) from release build
-    .alias('release', 'strip-debug')
-    .default('build', false)
-    .default('port', 9000)
-    .default('source', false)
-    .default('strip-debug', false)
-    .default('env', 'development')
-    .default('debug', false)
-    .argv;
+var args = require('./utils.js').getArguments();
 
 var build = !!(args.build || args.emulate || args.run);
 var emulate = args.emulate;
