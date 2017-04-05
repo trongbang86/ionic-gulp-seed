@@ -25,6 +25,13 @@ var _ = require('lodash');
 var fs = require('fs');
 var map = require('map-stream');
 
+/*
+ * lodash-deep is used for getEnvConfig
+ * for deep extend
+ */
+var underscoreDeepExtend = require('underscore-deep-extend');
+_.mixin({deepExtend: underscoreDeepExtend(_)});
+
 // this is the express server which 
 // will be initiated when gulp serve
 var server = null;
@@ -114,9 +121,7 @@ gulp.task('scripts', function() {
     }));
 
 
-  var envFile = './environments/' + args.env +'.json';
-
-  var envConfig = require(envFile);
+  var envConfig = getEnvConfig();
 
   var scriptStream = gulp
     .src(['templates.js', 'app.js', '**/*.js'], { cwd: 'app/scripts' })
@@ -509,19 +514,49 @@ _.each(assets_jobs, function(value, key){
  * Also it overrides the IP address while under development mode
  */
 function getEnvConfig() {
+    console.log('Entered getEnvConfig()');
+    var env = args.env;
     var envFolder = './environments';
     var defaultConfigFile = envFolder + '/default.json';
-    var envConfigFile = envFolder + '/' + args.env +'.json';
+    var envConfigFile = envFolder + '/' + env +'.json';
     var defaultConfig = {}; // This is the content of the default config file
     var envConfig = require(envConfigFile); // This is the content 
                             // of the specific env config file
+    console.log('Loaded envConfigFile for ' + env);
+    console.log('Value of ' + env + '.json: ' + _getString(envConfig));
 
     if(fs.existsSync(defaultConfigFile)){
         defaultConfig = require(defaultConfigFile);
+        console.log('Loaded default.json');
+        console.log('Value of default.json: ' + _getString(defaultConfig));
+
     }
 
+    //var res =  _.extend({}, defaultConfig, envConfig);
+    var res =  _.deepExtend({}, envConfig, defaultConfig);
+    console.log('Finished merging ' + env + '.json and default.json');
+    console.log('Merged Value:' + _getString(envConfig));
 
-    return _.extend({}, defaultConfig, envConfig);
+
+    return res;
 
 }
+
+/*
+ * This function is used to parse
+ * Map object
+ */
+function _getString(object) {
+    var s = '';
+    _.each(object, function(item, key) {
+        if (s === '') {
+            s = s + key + ':' + JSON.stringify(item);
+        
+        } else {
+            s = s + '\n\t' + key + ':' + JSON.stringify(item);
+        }
+    });
+    return s;
+}
+
 
