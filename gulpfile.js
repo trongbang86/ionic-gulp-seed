@@ -362,7 +362,7 @@ gulp.task('watchers', function() {
 gulp.task('noop', function() {});
 
 //testing
-gulp.task('test-unit', function(done){
+function testKarma(done) {
     var singleRun = true;
     if(args.debug) {
         singleRun = false;
@@ -373,7 +373,19 @@ gulp.task('test-unit', function(done){
     }, function(exitStatus){
         done(exitStatus ? "There are failing unit tests" : undefined);
     }).start();
-      
+
+}
+
+gulp.task('test-unit', function(done){
+    var args = require('./utils.js').getArguments();
+    args.isUnitTest = true;
+    testKarma(done);
+});
+
+gulp.task('test-integration', function(done){
+    var args = require('./utils.js').getArguments();
+    args.isIntegrationTest = true;
+    testKarma(done);
 });
 
 /*

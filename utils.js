@@ -3,9 +3,14 @@
  * and Karma config file
  */
 
-module.exports = {
-    getArguments: getArguments
-};
+module.exports = (function() {
+    var args = getArguments();
+    return {
+        getArguments: function() {
+            return args;
+        } 
+    }
+})();
 
 /**
  * Parse arguments
