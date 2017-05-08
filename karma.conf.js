@@ -20,9 +20,15 @@ function filesArray(){
 
     var appJsFiles = [
       'app/scripts/**/*.js',
-      'test/unit/global.js',
-      'test/unit/**/*.js'
+      'test/unit/global.js'
     ];
+
+    if (args.isUnitTest) {
+        appJsFiles.push('test/unit/**/*.js');
+    } else if (args.isIntegrationTest) {
+        appJsFiles.push('test/integration/**/*.js');
+    }
+
 
     var htmlFiles = ['app/templates/**/*.html'];
 
